@@ -1,0 +1,55 @@
+import requests
+from datetime import datetime
+import smtplib
+import time
+
+LAT = -1.307601
+LONG = 36.818782
+MY_EMAIL= "angedujude@gmail.com"
+MY_PASSWORD = "hzwbkthloouxdclm"
+
+def is_iss_overhead():
+    response = requests.get(url="http://api.open-notify.org/iss-now.json")
+    response.raise_for_status()
+
+    data = response.json()
+
+    latitude = float(response.json()["iss_position"]["latitude"])
+    longitude = float(response.json()["iss_position"]["longitude"])
+
+    iss_position = (longitude, latitude)
+    print(iss_position)
+
+    if LONG-5 <= longitude <= LONG+5 and  LAT-5 <= latitude <= LAT+5:
+        return True
+
+def is_night():
+    parameters = {
+        "lat": LAT,
+        "lng": LONG,
+        "formatted": 0
+    }
+
+    response = requests.get(
+        url="https://api.sunrise-sunset.org/json", params=parameters)
+    response.raise_for_status()
+    data = response.json()
+
+    sunrise = int(data["results"]["sunrise"].split("T")[1].split(":")[0])
+    sunset = int(data["results"]["sunset"].split("T")[1].split(":")[0])
+
+    time_now = datetime.now().hour()
+    if time_now>= sunset or time_now <=sunrise:
+        return True
+while True:
+    time.sleep(60)
+    if is_iss_overhead and is_night:
+        connection = smtplib.SMTP("smtp.gmail.com")
+        connection.starttls()
+        connection.login(MY_EMAIL,MY_PASSWORD)
+        jude = "ocomilj@gmail.com"
+        connection.sendmail(
+            from_addr=MY_EMAIL,
+            to_addrs= jude,
+            msg="Subject:Look Up \n\nThe ISS is above you in the sky"
+        )
