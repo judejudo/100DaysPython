@@ -10,12 +10,15 @@ AGE = os.getenv("AGE")
 WEIGHT = os.getenv("WEIGHT")
 HEIGHT = os.getenv("HEIGHT")
 GENDER = os.getenv("GENDER")
+MYUSERNAME = os.getenv("MYUSERNAME")
+MYPASSWORD = os.getenv("MYPASSWORD")
+
 
 nutrition_endpoint = "https://trackapi.nutritionix.com/v2/natural/exercise"
 sheety_endpoint = "https://api.sheety.co/755b3d11bce3f82747c13489820150d0/judeWorkouts/workouts"
 
 prompt = input("Please enter your days workout exercise ")
-headers = {
+header_nutrition_api = {
     "x-app-id": APP_KEY,
     "x-app-key": API_KEY  
 }
@@ -29,9 +32,8 @@ params = {
 
 current_date = datetime.now()
 
-response = requests.post(nutrition_endpoint, headers=headers, json=params)
+response = requests.post(nutrition_endpoint, headers=header_nutrition_api, json=params)
 json_response = response.json()
-
 
 for exercise in json_response['exercises']:
     sheety_data = {
@@ -44,8 +46,7 @@ for exercise in json_response['exercises']:
         }
     }
 
-
-sheety_response = requests.post(sheety_endpoint,json=sheety_data)
+sheety_response = requests.post(sheety_endpoint,json=sheety_data,auth=(MYUSERNAME,MYPASSWORD))
 print(sheety_response.json())
 
 if response.status_code == 200 and sheety_response.status_code ==200:
