@@ -13,3 +13,12 @@ class FlightSearch:
                                                             "location_types": location_types,
                                                             },headers = {"apikey": api_key})
         return response.json()
+    
+    def get_flight_details(self,api_key,fly_from, fly_to,currency,date_to,date_from):
+        response = requests.get(url = self.endpoint,params={
+                                                            "fly_from":fly_from,
+                                                            "fly_to":fly_to,
+                                                            "date_from": date_from,
+                                                            "date_to": date_to,
+                                                            "currency":currency}, headers = {"apikey" : api_key} )
+        return response.json()
